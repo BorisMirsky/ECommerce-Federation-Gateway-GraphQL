@@ -1,0 +1,19 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "ECommerce.Gateway\\ECommerce.Gateway.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "ECommerce.Service.Products\\ECommerce.Service.Products.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "ECommerce.Service.Users\\ECommerce.Service.Users.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

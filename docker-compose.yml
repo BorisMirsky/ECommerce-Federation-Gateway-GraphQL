@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  gateway:
+    build: ./src/ECommerce.Gateway
+    ports:
+      - "5000:5000"
+
+  service.products:
+    build: ./src/ECommerce.Service.Products
+    ports:
+      - "5001:5001"
+
+  service.users:
+    build: ./src/ECommerce.Service.Users
+    ports:
+      - "5002:5002" 

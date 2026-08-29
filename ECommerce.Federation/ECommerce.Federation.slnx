@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="../docker-compose.yml" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="ECommerce.Gateway/ECommerce.Gateway.csproj" />
+    <Project Path="ECommerce.Service.Products/ECommerce.Service.Products.csproj" />
+    <Project Path="ECommerce.Service.Users/ECommerce.Service.Users.csproj" />
+    <Project Path="ECommerce.Shared/ECommerce.Shared.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+</Solution>
