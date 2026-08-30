@@ -1,0 +1,5 @@
+﻿# Расширяем Product из сервиса Products
+extend type Product @key(fields: "id") {
+    id: Int! @external
+    isInCart: Boolean!
+}

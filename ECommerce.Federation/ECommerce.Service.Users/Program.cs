@@ -9,7 +9,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services
     .AddGraphQLServer()
-    .AddQueryType<Query>()
+    .AddQueryType<UserQuery>()
     .AddType<UserType>()
     .AddType<CartItemType>();
 
@@ -18,7 +18,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated(); // Создаёт БД и применяет HasData
+    db.Database.EnsureCreated(); 
 }
 
 app.MapGraphQL();

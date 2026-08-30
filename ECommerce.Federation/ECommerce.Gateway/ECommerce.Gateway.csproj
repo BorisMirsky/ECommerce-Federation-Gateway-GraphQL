@@ -7,8 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HotChocolate.ApolloFederation" Version="16.6.2" />
-    <PackageReference Include="HotChocolate.AspNetCore" Version="16.6.2" />
+    <PackageReference Include="HotChocolate.ApolloFederation" Version="13.9.14" />
+    <PackageReference Include="HotChocolate.AspNetCore" Version="13.9.14" />
+    <PackageReference Include="HotChocolate.Stitching" Version="13.9.14" />
   </ItemGroup>
 
 </Project>

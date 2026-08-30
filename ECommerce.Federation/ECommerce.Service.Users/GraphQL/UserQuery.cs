@@ -4,7 +4,7 @@ using ECommerce.Service.Users.Models;
 
 namespace ECommerce.Service.Users.GraphQL;
 
-public class Query
+public class UserQuery
 {
     public async Task<IEnumerable<User>> GetUsersAsync([Service] AppDbContext dbContext)
     {

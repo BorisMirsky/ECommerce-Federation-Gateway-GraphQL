@@ -9,14 +9,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseInMemoryDatabase("ProductsDb"));
 
 
-builder.Services.AddScoped<ProductReferenceResolver>();
+//builder.Services.AddScoped<ProductReferenceResolver>();
 
 builder.Services
     .AddGraphQLServer()
-    .AddQueryType<Query>()
-    .AddType<ProductType>()
+    .AddQueryType<Product>()
+    .AddType<ProductType>();
     //.RegisterService<ProductReferenceResolver>()
-    .AddApolloFederation(); 
+    //.AddApolloFederation(); 
 
 var app = builder.Build();
 

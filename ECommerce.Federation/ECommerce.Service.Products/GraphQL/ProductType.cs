@@ -2,9 +2,9 @@
 
 namespace ECommerce.Service.Products.GraphQL;
 
-public class ProductType : ObjectType<Product>
+public class ProductType : ObjectType<Models.Product>
 {
-    protected override void Configure(IObjectTypeDescriptor<Product> descriptor)
+    protected override void Configure(IObjectTypeDescriptor<Models.Product> descriptor)
     {
         descriptor.Field(p => p.Id).Type<NonNullType<IntType>>();
         descriptor.Field(p => p.Name).Type<NonNullType<StringType>>();
