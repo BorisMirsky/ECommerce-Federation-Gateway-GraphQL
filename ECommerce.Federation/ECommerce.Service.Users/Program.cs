@@ -10,6 +10,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services
     .AddGraphQLServer()
     .AddQueryType<UserQuery>()
+    .AddMutationType<Mutation>()
     .AddType<UserType>()
     .AddType<CartItemType>();
 
