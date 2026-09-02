@@ -4,6 +4,7 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="ECommerce.Service.Products/ECommerce.Service.Products.csproj" />
+    <Project Path="ECommerce.Service.Users.Tests/ECommerce.Service.Users.Tests.csproj" Id="e943be42-8072-492b-a79a-20cb5eb12561" />
     <Project Path="ECommerce.Service.Users/ECommerce.Service.Users.csproj" />
     <Project Path="ECommerce.Shared/ECommerce.Shared.csproj" />
   </Folder>
