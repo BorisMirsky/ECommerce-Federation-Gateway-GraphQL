@@ -57,5 +57,7 @@ TestResult.xml
 nunit-*.xml
 
 
+*.db
+
 
 .vs/

@@ -8,12 +8,12 @@ using ECommerce.Service.Users.Models;
 
 namespace ECommerce.Service.Users.Tests;
 
-public class CartMutationTests : IClassFixture<WebApplicationFactory<Program>>, IAsyncLifetime
+public class CartMutationTests : IClassFixture<WebApplicationFactory<Program>>, IDisposable
 {
     private readonly WebApplicationFactory<Program> _factory;
-    private HttpClient _client = null!;
-    private IServiceScope _scope = null!;
-    private AppDbContext _db = null!;
+    private readonly HttpClient _client;
+    private readonly AppDbContext _db;
+    private readonly IServiceScope _scope;
 
     public CartMutationTests(WebApplicationFactory<Program> factory)
     {
@@ -21,37 +21,33 @@ public class CartMutationTests : IClassFixture<WebApplicationFactory<Program>>, 
         {
             builder.ConfigureServices(services =>
             {
-                // Удаляем реальный DbContext
-                var descriptor = services.SingleOrDefault(
-                    d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
+                // Удаляем все регистрации DbContext
+                var descriptorsToRemove = services
+                    .Where(d => d.ServiceType == typeof(DbContextOptions<AppDbContext>) ||
+                                d.ServiceType == typeof(DbContextOptions) ||
+                                d.ImplementationType == typeof(AppDbContext) ||
+                                d.ServiceType == typeof(AppDbContext))
+                    .ToList();
 
-                if (descriptor != null)
+                foreach (var descriptor in descriptorsToRemove)
                 {
                     services.Remove(descriptor);
                 }
 
-                // Добавляем InMemory БД с УНИКАЛЬНЫМ именем для каждого теста
+                // Используем SQLite InMemory для тестов
                 services.AddDbContext<AppDbContext>(options =>
                 {
-                    options.UseInMemoryDatabase($"TestDb_{Guid.NewGuid()}");
-                }, ServiceLifetime.Singleton); // <-- Важно!
+                    options.UseSqlite("Data Source=:memory:");
+                });
             });
         });
-    }
 
-    public async Task InitializeAsync()
-    {
         _client = _factory.CreateClient();
-
-        // Получаем доступ к БД через сервисы
         _scope = _factory.Services.CreateScope();
         _db = _scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        // Очищаем и создаём БД
-        await _db.Database.EnsureDeletedAsync();
-        await _db.Database.EnsureCreatedAsync();
+        _db.Database.EnsureCreated();
 
-        // Сид-данные
         _db.Users.AddRange(
             new User { Id = 1, Name = "Борис", Email = "boris@example.com" },
             new User { Id = 2, Name = "Анна", Email = "anna@example.com" }
@@ -63,13 +59,15 @@ public class CartMutationTests : IClassFixture<WebApplicationFactory<Program>>, 
             new CartItem { Id = 3, UserId = 2, ProductId = 2, Quantity = 1 }
         );
 
-        await _db.SaveChangesAsync();
+        _db.SaveChanges();
     }
 
-    public async Task DisposeAsync()
+    public void Dispose()
     {
-        await _scope.DisposeAsync();
-        await _db.DisposeAsync();
+        _db?.Database.EnsureDeleted();
+        _scope?.Dispose();
+        _db?.Dispose();
+        _client?.Dispose();
     }
 
     [Fact]

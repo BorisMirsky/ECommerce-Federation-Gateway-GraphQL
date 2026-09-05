@@ -8,12 +8,12 @@ using ECommerce.Service.Users.Models;
 
 namespace ECommerce.Service.Users.Tests;
 
-public class UserQueryTests : IClassFixture<WebApplicationFactory<Program>>, IAsyncLifetime
+public class UserQueryTests : IClassFixture<WebApplicationFactory<Program>>, IDisposable
 {
     private readonly WebApplicationFactory<Program> _factory;
-    private HttpClient _client = null!;
-    private IServiceScope _scope = null!;
-    private AppDbContext _db = null!;
+    private readonly HttpClient _client;
+    private readonly AppDbContext _db;
+    private readonly IServiceScope _scope;
 
     public UserQueryTests(WebApplicationFactory<Program> factory)
     {
@@ -21,30 +21,30 @@ public class UserQueryTests : IClassFixture<WebApplicationFactory<Program>>, IAs
         {
             builder.ConfigureServices(services =>
             {
-                var descriptor = services.SingleOrDefault(
-                    d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
+                var descriptorsToRemove = services
+                    .Where(d => d.ServiceType == typeof(DbContextOptions<AppDbContext>) ||
+                                d.ServiceType == typeof(DbContextOptions) ||
+                                d.ImplementationType == typeof(AppDbContext) ||
+                                d.ServiceType == typeof(AppDbContext))
+                    .ToList();
 
-                if (descriptor != null)
+                foreach (var descriptor in descriptorsToRemove)
                 {
                     services.Remove(descriptor);
                 }
 
                 services.AddDbContext<AppDbContext>(options =>
                 {
-                    options.UseInMemoryDatabase($"TestDb_{Guid.NewGuid()}");
-                }, ServiceLifetime.Singleton);
+                    options.UseSqlite("Data Source=:memory:");
+                });
             });
         });
-    }
 
-    public async Task InitializeAsync()
-    {
         _client = _factory.CreateClient();
         _scope = _factory.Services.CreateScope();
         _db = _scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        await _db.Database.EnsureDeletedAsync();
-        await _db.Database.EnsureCreatedAsync();
+        _db.Database.EnsureCreated();
 
         _db.Users.AddRange(
             new User { Id = 1, Name = "Борис", Email = "boris@example.com" },
@@ -57,16 +57,16 @@ public class UserQueryTests : IClassFixture<WebApplicationFactory<Program>>, IAs
             new CartItem { Id = 3, UserId = 2, ProductId = 2, Quantity = 1 }
         );
 
-        await _db.SaveChangesAsync();
+        _db.SaveChanges();
     }
 
-    public async Task DisposeAsync()
+    public void Dispose()
     {
-        await _scope.DisposeAsync();
-        await _db.DisposeAsync();
+        _db?.Database.EnsureDeleted();
+        _scope?.Dispose();
+        _db?.Dispose();
+        _client?.Dispose();
     }
-
-    private HttpClient CreateClient() => _client;
 
     [Fact]
     public async Task GetUsers_ShouldReturnAllUsers()

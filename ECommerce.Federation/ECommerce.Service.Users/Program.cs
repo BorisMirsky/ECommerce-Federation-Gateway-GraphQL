@@ -2,10 +2,13 @@ using Microsoft.EntityFrameworkCore;
 using ECommerce.Service.Users.Data;
 using ECommerce.Service.Users.GraphQL;
 
+
+
 var builder = WebApplication.CreateBuilder(args);
 
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseInMemoryDatabase("UsersDb"));
+    options.UseSqlite("Data Source=users.db")); 
 
 builder.Services
     .AddGraphQLServer()
